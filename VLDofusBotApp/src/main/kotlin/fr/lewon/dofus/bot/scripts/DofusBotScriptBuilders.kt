@@ -10,6 +10,7 @@ enum class DofusBotScriptBuilders(val builder: DofusBotScriptBuilder) {
     EXPLORE_AREA(ExploreAreaScriptBuilder),
     EXPLORE_ALL_ZAAPS(ExploreAllZaapsScriptBuilder),
     FOLLOW_CIRCUIT(FollowCircuitScriptBuilder),
+    FARM_MAP(FarmCurrentMapScriptBuilder),
     UPDATE_METAMOB(UpdateMetamobScriptBuilder),
     TREASURE_HUNT_EXECUTE(ExecuteTreasureHuntScriptBuilder),
     FIGHT_ARENA(FightArenaScriptBuilder),
