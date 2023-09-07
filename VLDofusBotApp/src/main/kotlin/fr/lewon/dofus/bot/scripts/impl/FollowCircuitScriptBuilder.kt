@@ -13,6 +13,7 @@ import fr.lewon.dofus.bot.scripts.DofusBotScriptStat
 import fr.lewon.dofus.bot.scripts.parameters.DofusBotParameter
 import fr.lewon.dofus.bot.scripts.parameters.impl.BooleanParameter
 import fr.lewon.dofus.bot.scripts.parameters.impl.ChoiceParameter
+import fr.lewon.dofus.bot.scripts.parameters.impl.MultiCoordinatesParameter
 import fr.lewon.dofus.bot.scripts.parameters.impl.StringParameter
 import fr.lewon.dofus.bot.scripts.tasks.impl.transport.ReachMapTask
 import fr.lewon.dofus.bot.util.game.TravelUtil
@@ -24,18 +25,13 @@ object FollowCircuitScriptBuilder : DofusBotScriptBuilder("Follow Circuit") {
         .filter { it.viewableEverywhere && it.visibleOnMap }
     private val DEFAULT_WORLD_MAP = WorldMapManager.getWorldMap(1)
         ?: error("Default world map not found")
-    private val MAP_ID_BY_DUNGEON = HintManager.getHints(HintManager.HintType.DUNGEON)
-        .associateBy { "${it.name} (${it.level})" }
-    private val DUNGEON_LABELS = MAP_ID_BY_DUNGEON.entries.sortedWith(
-        compareBy({ it.value.level }, { it.key })
-    ).map { it.key }
 
     private var currentPathIndex = 0;
 
-    private val coordinatesParameter = StringParameter(
+    private val coordinatesParameter = MultiCoordinatesParameter(
         "x1,y1;x2,y2;...",
         "Coordinates of the circuit to follow. Goes to first coordinates when starting the script",
-        "0,0",
+        emptyList(),
         parametersGroup = 1,
     )
 
@@ -111,10 +107,7 @@ object FollowCircuitScriptBuilder : DofusBotScriptBuilder("Follow Circuit") {
     }
 
     private fun getDestMaps(gameInfo: GameInfo, parameterValues: ParameterValues): List<DofusMap> {
-        val circuitCoordinatesString = parameterValues.getParamValue(coordinatesParameter)
-        val circuitCoordinates = circuitCoordinatesString.split(";")
-                .map { it.split(",") }
-                .map { DofusCoordinates(it[0].toInt(), it[1].toInt()) }
+        val circuitCoordinates = parameterValues.getParamValue(coordinatesParameter)
         val currentMapCoordinates = gameInfo.currentMap.coordinates
 
         if (currentMapCoordinates == circuitCoordinates[currentPathIndex]) {
@@ -123,6 +116,12 @@ object FollowCircuitScriptBuilder : DofusBotScriptBuilder("Follow Circuit") {
 
         val currentTarget = circuitCoordinates[currentPathIndex]
         val (x, y) = currentTarget
+
+        println("""
+            currentMapCoordinates: $currentMapCoordinates
+            currentTarget: $currentTarget
+            x,y: $x,$y
+        """.trimIndent())
         
         val worldMap = getDestinationWorldMap(gameInfo.currentMap, parameterValues)
         val maps = MapManager.getDofusMaps(x, y)

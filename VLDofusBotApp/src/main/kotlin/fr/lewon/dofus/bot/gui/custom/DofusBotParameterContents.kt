@@ -51,6 +51,7 @@ fun <T> ParameterInput(
             is IntParameter -> IntParameterInput(parameter, parameterValues, castedOnParamUpdate)
             is LongParameter -> LongParameterInput(parameter, parameterValues, castedOnParamUpdate)
             is StringParameter -> StringParameterInput(parameter, parameterValues, castedOnParamUpdate)
+            is MultiCoordinatesParameter -> MultiCoordinatesParameterInput(parameter, parameterValues, castedOnParamUpdate)
             else -> error("Not supported parameter : ${parameter::class.java}")
         }
     }
@@ -129,4 +130,13 @@ private fun StringParameterInput(
     onParamUpdate: (String) -> Unit,
 ) {
     SimpleTextField(parameterValues.getParamValue(parameter), onParamUpdate)
+}
+
+@Composable
+private fun MultiCoordinatesParameterInput(
+        parameter: MultiCoordinatesParameter,
+        parameterValues: ParameterValues,
+        onParamUpdate: (String) -> Unit,
+) {
+    SimpleTextField(parameterValues.getParamValue(parameter).toString(), onParamUpdate)
 }
